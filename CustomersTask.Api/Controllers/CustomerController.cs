@@ -45,24 +45,6 @@ namespace Customers.Api.Controllers
             return Ok(customer);
         }
 
-        //[HttpPut("{id}")]
-        //public async Task<ActionResult<Customer>> UpdateCustomer(Guid id, Customer customer)
-        //{
-        //    if (id != customer.Id)
-        //    {
-        //        return BadRequest("The Id in the URL does not match the Id of the customer.");
-        //    }
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-
-        //    await _customerRepository.UpdateCustomerAsync(customer);
-
-        //    return Ok(customer);
-        //}
-
-
         [HttpPut("{id}")]
         public async Task<ActionResult<Customer>> UpdateCustomer(Guid id, Customer customer)
         {
