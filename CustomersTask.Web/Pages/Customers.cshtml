@@ -1,0 +1,169 @@
+﻿@page
+@model CustomersTask.Web.Pages.CustomersModel
+
+<h2>Manage Customers</h2>
+
+<table id="customersTable">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var customer in Model.Customers)
+        {
+            <tr id="@customer.Id">
+                <td>@customer.Name</td>
+                <td>@customer.Email</td>
+                <td><button onclick="editCustomer('@customer.Id')">Edit</button></td>
+                <td><button onclick="deleteCustomer('@customer.Id')">Delete</button></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<form id="addCustomerForm">
+    <h3>Add Customer</h3>
+    <label for="name">Name:</label><br>
+    <input type="text" id="name" name="name" required title="Please enter a name."><br>
+    <label for="email">Email:</label><br>
+    <input type="email" id="email" name="email" required title="Please enter a valid email address."><br>
+    <input type="submit" value="Submit">
+</form>
+
+<form id="editCustomerForm" style="display:none;">
+    <h3>Edit Customer</h3>
+    <input type="hidden" id="editCustomerId" name="id">
+    <label for="editName">Name:</label><br>
+    <input type="text" id="editName" name="name" required><br>
+    <label for="editEmail">Email:</label><br>
+    <input type="email" id="editEmail" name="email" required><br>
+    <button type="submit">Update</button>
+    <button type="button" onclick="cancelEdit()">Cancel</button>
+</form>
+
+<script>
+    var baseUrl = '@Model.BaseUrl';
+</script>
+<script>
+    document.getElementById('addCustomerForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        var name = document.getElementById('name').value;
+        var email = document.getElementById('email').value;
+
+        fetch(baseUrl + '/Customers', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                name: name,
+                email: email
+            }),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Server validation failed: ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                var table = document.getElementById('customersTable');
+                var row = table.insertRow(-1);
+                row.id = data.id;
+                var cell1 = row.insertCell(0);
+                var cell2 = row.insertCell(1);
+                var cell3 = row.insertCell(2);
+                var cell4 = row.insertCell(3);
+
+                cell1.innerHTML = data.name;
+                cell2.innerHTML = data.email;
+                cell3.innerHTML = '<button onclick="editCustomer(\'' + data.id + '\')">Edit</button>';
+                cell4.innerHTML = '<button onclick="deleteCustomer(\'' + data.id + '\')">Delete</button>';
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert(error.message);
+            });
+    });
+    function showEditForm(id) {
+        var row = document.getElementById(id);
+        var currentName = row.cells[0].innerText;
+        var currentEmail = row.cells[1].innerText;
+
+        document.getElementById('editCustomerId').value = id;
+        document.getElementById('editName').value = currentName;
+        document.getElementById('editEmail').value = currentEmail;
+
+        document.getElementById('editCustomerForm').style.display = 'block';
+
+        document.getElementById('addCustomerForm').style.display = 'none';
+    }
+
+    function cancelEdit() {
+        document.getElementById('editCustomerForm').style.display = 'none';
+
+        document.getElementById('addCustomerForm').style.display = 'block';
+    }
+
+    document.getElementById('editCustomerForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        var id = document.getElementById('editCustomerId').value;
+        var name = document.getElementById('editName').value;
+        var email = document.getElementById('editEmail').value;
+
+        fetch(baseUrl+ '/Customers/' + id, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                id: id,
+                name: name,
+                email: email
+            }),
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Server validation failed: ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                var row = document.getElementById(id);
+                row.cells[0].innerText = data.name;
+                row.cells[1].innerText = data.email;
+
+                cancelEdit();
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert(error.message);
+            });
+    });
+
+    function editCustomer(id) {
+        showEditForm(id);
+    }
+
+
+    function deleteCustomer(id) {
+        fetch(baseUrl + '/Customers/' + id, {
+            method: 'DELETE',
+        })
+            .then(() => {
+                var table = document.getElementById('customersTable');
+                var row = document.getElementById(id);
+                table.deleteRow(row.rowIndex);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    }
+</script>
+
