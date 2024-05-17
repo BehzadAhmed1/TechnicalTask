@@ -8,11 +8,11 @@ The solution is divided into four projects:
 
 1. **API**: This is the API layer of the application. It exposes endpoints for retrieving, adding, deleting and updating customers.
 
-2. **Web**: This is a simple front end using razor pages to call the api endpoints. Theres a table to view the customers, and buttons to edit and delete. There is a form to update or add new customers.  
+2. **Web**: This is a simple front end using razor pages to call the api endpoints. There is a table to view the customers, and buttons to edit and delete. There is a form to update or add new customers.  
 
-3. **Infrastructure**: This is the infrastructure layer of the application. It contains data access logic and database configurations. It uses EF Core to interact with the SQL Server database and manage database migrations.
+3. **Infrastructure**: This is the infrastructure layer of the application. It contains repositories, data access logic and database configurations. It uses EF Core to interact with the SQL Server database and manage database migrations.
 
-4. **Test**:  This project includes all the unit tests. It uses nunit and moq to to test the customer controller methods. 
+4. **Test**:  This project includes all the unit tests. It uses nunit and moq to test the customer controller methods. 
 
 
 ### Prerequisites
@@ -25,6 +25,7 @@ The solution is divided into four projects:
 1. Clone the repository
 2. Restore the NuGet packages
 3. Update the `appsettings.json` files in both the API and Web projects with your configuration
+4. Run the db migrations 
 
 ## Configuration
 
